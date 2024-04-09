@@ -247,15 +247,15 @@ testhand = {
 function catchUp(){
     var round = testhand['PokerHand']['Rounds'].length - 1;
 
-    setBoard(testhand);
-    setHeroCards(testhand);
-    setOpponentCards(testhand);
-    setPlayerNames(testhand);
-    setPlayerStacks(testhand);
-    setPots(testhand);
+    setBoard();
+    setHeroCards();
+    setOpponentCards();
+    setPlayerNames();
+    setPlayerStacks();
+    setPots();
 
-    curActions = testhand['PokerHand']['Rounds'][round]['Actions'];
-    curBets = [0,0,0,0,0,0,0];
+   // curActions = testhand['PokerHand']['Rounds'][round]['Actions'];
+    //curBets = [0,0,0,0,0,0,0];
     addCommittedAmounts(curActions, curBets, testhand);
     for (var i = 0; i < curBets.length; i++)
         setBet(curBets[i], i+1);
@@ -270,37 +270,6 @@ function updateGameState() {
         url: sidebar.data('uid')
     };
     catchUp();
-
-    // $.ajax({
-    //     url: '/Games/GetState',
-    //     type: 'POST',
-    //     data: JSON.stringify(requestData),
-    //     dataType: 'json',
-    //     contentType: 'application/json; charset=utf-8',
-    //     success: function (msg) {
-    //         var history = msg.State;
-    //         var prevHand = msg.Previous;
-
-    //         if(history.Context.ID != game.Context.ID)
-    //                 resetTable();
-            
-    //         game = history;
-
-    //         // Update the GUI with any 
-    //         catchUp();
-
-    //         // Set the timer, or hide it if it's not our turn
-    //         if (msg.Timer != null)
-    //             setTimer(msg.Timer.Value);
-    //         else 
-    //             hideTimer();
-    //     },
-    //     error: function (msg) {
-    //         $("#error-results").prepend(msg.responseText);
-    //         $("#error-results").prepend(prettyPrint(msg));
-    //         $("#error-results").show();
-    //     }
-    // });
 }
 
 function setTimer(val) {
@@ -321,10 +290,10 @@ function hideTimer() {
     $('#game-timer').hide();
 }
 
-function setPlayerNames(hand){
-    players = hand['PokerHand']['Players'];
+function setPlayerNames(playerids){
+    players = playerids
     for(var i = 0; i < players.length; i++)
-        setPlayerName(players[i]['Name'], parseInt(players[i]['Seat']));
+        setPlayerName(playerids[i],  playerids[i]);
 }
 
 function setPlayerName(name, seat){
@@ -337,16 +306,16 @@ function setPlayerStacks(hand){
     blinds = hand['PokerHand']['Blinds'];
     addCommittedAmounts(blinds, committed, hand);
 
-    var rounds = hand['PokerHand']['Rounds'];
-    for (var i = 0; i < rounds.length; i++)
-        addCommittedAmounts(rounds[i], committed, hand);
+    // var rounds = hand['PokerHand']['Rounds'];
+    // for (var i = 0; i < rounds.length; i++)
+    //     addCommittedAmounts(rounds[i], committed, hand);
 
-    players = hand['PokerHand']['Players'];
-    for(var i = 0; i < players.length; i++){
-        stack = parseFloat(players[i]['Stack']);
-        seat = parseInt(players[i]['Seat']);
-        setPlayerStack(stack - committed[seat], seat);
-    }
+    // players = hand['PokerHand']['Players'];
+    // for(var i = 0; i < players.length; i++){
+    //     stack = parseFloat(players[i]['Stack']);
+    //     seat = parseInt(players[i]['Seat']);
+    //     setPlayerStack(stack - committed[seat], seat);
+    // }
 }
 
 function setPlayerStack(amount, seat){
@@ -429,16 +398,18 @@ function setHoleCards(hc, seat){
 }
 
 function setBoard(hand){
-    var round = testhand['PokerHand']['Rounds'].length - 1;
-    if (round >= 1){
-        setFlop(testhand['PokerHand']['Rounds'][1]['CommunityCards']);
-        if(round >= 2){
-            setTurn(testhand['PokerHand']['Rounds'][2]['CommunityCards']);
-            if(round >= 3){
-                setRiver(testhand['PokerHand']['Rounds'][3]['CommunityCards']);
-            }
-        }         
-    }
+    // var round = testhand['PokerHand']['Rounds'].length - 1;
+    // if (round >= 1){
+    //     setFlop(testhand['PokerHand']['Rounds'][1]['CommunityCards']);
+    //     if(round >= 2){
+    //         setTurn(testhand['PokerHand']['Rounds'][2]['CommunityCards']);
+    //         if(round >= 3){
+    //             setRiver(testhand['PokerHand']['Rounds'][3]['CommunityCards']);
+    //         }
+    //     }         
+    // }
+
+
 }
 
 function setFlop(flop) {
@@ -467,35 +438,8 @@ function setBet(bet, seat){
         betdiv.text('$' + bet);
 }
 
-function setPots(hand){
-    // TODO: Handle side pots on all-ins
-    var curPot = 0.0;
-    var totalPot = 0.0;
-    blinds = hand['PokerHand']['Blinds'];
-    round = hand['PokerHand']['Rounds'].length - 1;
-    for(var i = 0; i < blinds.length; i++){
-        var amt = blinds[i]['Amount'];
-        if (amt == null)
-            continue;
-        amt = parseFloat(amt);
-        totalPot += amt;
-        if (round > 0)
-            curPot += amt;
-    }
-
-    var rounds = hand['PokerHand']['Rounds'];
-    for (var i = 0; i < rounds.length; i++){
-        actions = rounds[i]['Actions'];
-        for (var j = 0; j < actions.length; j++){
-            var amt = actions[j]['Amount'];
-            if (amt == null)
-                continue;
-            amt = parseFloat(amt);
-            totalPot += amt;
-            if (round > i)
-                curPot += amt;
-        }
-    }
+function setPots(curPot, totalPot){
+    
 
     setCurrentPot(curPot);
     setTotalPot(totalPot);
@@ -538,7 +482,4 @@ function moveButton(seat){
     button.addClass('seat' + seat + '-button');
 }
 
-$(document).everyTime(1000,
-function (i) {
-    updateGameState();
-}, 0);
+updateGameState();
