@@ -251,6 +251,16 @@
     left:200px;
 }
 
+#raise-range {
+    left: 300px;
+    position: absolute;
+}
+
+#sliderValue {
+    left: 500px;
+    position: absolute;
+}
+
 #history {
     position:absolute;
     width:400px;
@@ -263,3 +273,41 @@
     left:800px;
     top:5px;
 }
+
+
+#countdown {
+    top: 40px;
+    width: 100px;
+    height: 100px;
+    background: lightgray;
+    border-radius: 50%;
+    position: relative;
+  }
+  
+  #countdown:before {
+    content: attr(data-time);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+  }
+  
+  #countdown:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 16px solid;
+    border-color: green transparent transparent;
+    box-sizing: border-box;
+    animation: circletimer 59s linear infinite;
+  }
+  
+  @keyframes countdown {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }

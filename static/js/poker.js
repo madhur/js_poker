@@ -338,26 +338,55 @@ function addCommittedAmounts(actions, committed, hand) {
 }
 
 function getCardSrc(rank, suit) {
-  rank = rank.toLowerCase();
-  if (rank == "two")
-    rank = 2;
-  else if (rank == "three")
-    rank = 3;
-  else if (rank == "four")
-    rank = 4;
-  else if (rank == "five")
-    rank = 5;
-  else if (rank == "six")
-    rank = 6;
-  else if (rank == "seven")
-    rank = 7;
-  else if (rank == "eight")
-    rank = 8;
-  else if (rank == "nine")
-    rank = 9;
-  else if (rank == "ten")
-    rank = 10;
-  return "url('static/images/" + rank + "_of_" + suit.toLowerCase() + ".png')";
+  let suit_words = null;
+  if (suit === 0) {
+    suit_words = "diamonds";
+  }
+  else if (suit === 1) {
+    suit_words = "clubs";
+  }
+  else if (suit === 2) {
+    suit_words = "hearts";
+  }
+  else if (suit === 3) {
+    suit_words = "spades";
+  }
+
+  if (rank >= 0 && rank <= 8) {
+    rank = rank + 2;
+  }
+  else if (rank == 9) {
+    rank = "jack";
+  }
+  else if (rank == 10) {
+    rank = "queen";
+  }
+  else if (rank == 11) {
+    rank = "king";
+  }
+  else if (rank == 12) {
+    rank = "ace";
+  }
+  // rank = rank.toLowerCase();
+  // if (rank == "two")
+  //   rank = 2;
+  // else if (rank == "three")
+  //   rank = 3;
+  // else if (rank == "four")
+  //   rank = 4;
+  // else if (rank == "five")
+  //   rank = 5;
+  // else if (rank == "six")
+  //   rank = 6;
+  // else if (rank == "seven")
+  //   rank = 7;
+  // else if (rank == "eight")
+  //   rank = 8;
+  // else if (rank == "nine")
+  //   rank = 9;
+  // else if (rank == "ten")
+  //   rank = 10;
+  return "url('static/images/" + rank + "_of_" + suit_words.toLowerCase() + ".png')";
 }
 
 function setHeroCards(hand) {
@@ -388,7 +417,7 @@ function findSeatNumber(player, hand) {
   return -1;
 }
 
-function setHoleCards(hc, seat) {
+function setHoleCards(seat, hc) {
   var holecards = $('#seat' + seat).children('.holecards');
   var card1 = holecards.children('.holecard1');
   var card2 = holecards.children('.holecard2');
@@ -427,7 +456,7 @@ function setRiver(river) {
 }
 
 function setCard(div, card) {
-  div.css('background-image', getCardSrc(card['Rank'], card['Suit']))
+  div.css('background-image', getCardSrc(card['rank'], card['suit']))
 }
 
 function setBet(bet, seat) {
@@ -488,6 +517,8 @@ setupwebsocket();
 // Global vars
 var socket = null;
 var user_id = null;
+var table_id = null;
+var hand_id = null;
 
 // Global vars end
 
@@ -526,6 +557,51 @@ function setupwebsocket() {
     }
   }
 
+  $("#fold-button").click(function () {
+
+    const playerAction = getPlayerActionObject();
+    playerAction.action = "fold";
+    socket.send(JSON.stringify(playerAction));
+    toggleActionsMenu(false);
+    stopTimer();
+  });
+
+  $("#call-button").click(function () {
+
+    const playerAction = getPlayerActionObject();
+    playerAction.action = "call";
+    socket.send(JSON.stringify(playerAction));
+    toggleActionsMenu(false);
+    stopTimer();
+  });
+
+  $("#raise-button").click(function () {
+
+    const playerAction = getPlayerActionObject();
+    playerAction.action = "raise";
+    const raiseValue = $('#raise-range').val();
+    playerAction.bet = raiseValue;
+    socket.send(JSON.stringify(playerAction));
+    toggleActionsMenu(false);
+    stopTimer();
+  });
+
+  document.getElementById('raise-range').oninput = function () {
+    document.getElementById('sliderValue').innerHTML = this.value;
+  }
+
+  function getPlayerActionObject() {
+
+    return {
+      "type": "PLAYER_ACTION",
+      "tableId": table_id,
+      "handId": hand_id,
+      "sid": "test",
+      "src": user_id,
+      "action": null,
+      "bet": null
+    }
+  }
 
   socket.addEventListener('open', function (event) {
     console.log('WebSocket connection established.');
@@ -540,9 +616,21 @@ function setupwebsocket() {
 
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data);
+    if (data.type === 'heartbeatresp') {
+      return;
+    }
     console.log("Incoming message", data);
     if (data.type === 'INITIALIZE_HAND') {
       handleHandInitMessage(data);
+    }
+    else if (data.type === 'HOLE_CARDS') {
+      distributeHoleCards(data);
+    }
+    else if (data.type === 'PLAYER_TURN') {
+      handlePlayerTurn(data);
+    }
+    else if (data.type === 'TURN_UPDATE_BROADCAST') {
+      handleTurnUpdateBroadcast(data);
     }
 
   });
@@ -562,41 +650,127 @@ function setupwebsocket() {
 
 function handleHandInitMessage(handInitMessage) {
   $('.seat').hide();
-  $('.seat').hide();
-  handInitMessage.users.forEach(uid=>{
-      $('#seat' + uid).show();
-  });
-  handInitMessage.users.forEach(uid=>{
-    $('#seat' + uid  + ' chips').text(handInitMessage.initialAmounts[0])
-  });
-  handInitMessage.users.forEach(uid=>{
-    $('#seat' + uid  + ' .bet').text("0")
-  });
-  var sbUserId, bbUserId, dealerUserId;
-  sbUserId = handInitMessage.users[handInitMessage.smallBlindPosition];
-  bbUserId = handInitMessage.users[handInitMessage.bigBlindPosition];
-  dealerUserId = handInitMessage.users[handInitMessage.dealerPosition];
+  handInitMessage.users.forEach(user => {
+    const playerId = user.playerId;
+    $('#seat' + playerId).show();
+    $('#seat' + playerId + ' .holecards').hide();
 
-  moveButton(dealerUserId)
-  let  sbplayerName = $('#seat' + sbUserId + ' .player-name').text();
-  $('#seat' + sbUserId + ' .player-name').text(sbplayerName + " SB");
-
-  let  bbplayerName = $('#seat' + bbUserId + ' .player-name').text();
-  $('#seat' + bbUserId + ' .player-name').text(bbplayerName + " BB");
+    $('#seat' + playerId + ' .chips').text(user.walletAmount)
+    if (user.bet) {
+      $('#seat' + playerId + ' .bet').text(user.bet)
+    }
+    else {
+      $('#seat' + playerId + ' .bet').text("")
+    }
+    if (user.smallBlind) {
+      let sbplayerName = $('#seat' + playerId + ' .player-name').text();
+      $('#seat' + playerId + ' .player-name').text(sbplayerName + " SB");
+    }
+    else if (user.bigBlind) {
+      let bbplayerName = $('#seat' + playerId + ' .player-name').text();
+      $('#seat' + playerId + ' .player-name').text(bbplayerName + " BB");
+    }
+    else if (user.dealer) {
+      moveButton(playerId);
+    }
+  });
 
   $('#board').hide();
-  $('#total-pot').text("0")
+  $('#total-pot').text(handInitMessage.pot)
+  $('#game-timer').hide();
+  $('#action-options').hide();
 
+  // assign globals
+  table_id = handInitMessage.tableId;
+  hand_id = handInitMessage.handId;
+
+}
+
+function distributeHoleCards(data) {
+  setHoleCards(user_id, data.cards)
+  data.activePlayers.forEach(user => {
+    $('#seat' + user + ' .holecards').show();
+  })
+}
+
+function handleTurnUpdateBroadcast(data) {
+  $('#total-pot').text(data.pot)
+  data.users.forEach(user => {
+    const playerId = user.playerId;
+
+    $('#seat' + playerId + ' .chips').text(user.walletAmount)
+    $('#seat' + playerId + ' .bet').text(user.bet);
+
+  });
+
+
+}
+
+function handlePlayerTurn(data) {
+  data.actionMenu.forEach(action => {
+    if (action.action === 'fold') {
+      $("#fold-button").show();
+    }
+    else if (action.action === 'call') {
+      $("#call-button").show();
+    }
+    else if (action.action === 'raise') {
+      $("#raise-button").show();
+      $('#raise-range').attr('min', action.minBet);
+      $('#raise-range').attr('max', action.maxBet);
+
+    }
+    else if (action.action === 'all_in') {
+
+    }
+
+  });
+  $('#action-options').show();
+  startTimer(user_id);
+
+}
+
+function toggleActionsMenu(show) {
+  if (show) {
+    $('#action-options').show();
+  }
+  else {
+    $('#action-options').hide();
+  }
 }
 
 
 function start_game() {
 
-  if (socket  == null) {
+  if (socket == null) {
     console.error("Socket not connected");
     return;
   }
 
   socket.send(`{"type": "start_game", "sid": "test", "src": ${user_id}}\n`);
 
+}
+
+function stopTimer() {
+  clearInterval(existing_timer);
+  existing_timer = null;
+  current_turn_user = null;
+}
+
+function startTimer(userId) {
+  
+  if (existing_timer != null) {
+    clearInterval(existing_timer);
+  }
+
+  current_turn_user = userId;
+  existing_timer = setInterval(blink_text, 1000);
+}
+
+var current_turn_user = null;
+var existing_timer = null;
+
+function blink_text() {
+  $('#seat' + current_turn_user + ' .player-name').fadeOut(500);
+  $('#seat' + current_turn_user + ' .player-name').fadeIn(500);
 }

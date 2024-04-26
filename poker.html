@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="static/css/poker.css" type="text/css">
     <script type="text/javascript" src="static/js/jquery.min.js"></script>
     <script type="text/javascript" src="static/js/jquery.timers.min.js"></script>
-    <script type="text/javascript" src="static/js/poker.js"></script>
+   
     <script type="text/javascript" src="static/js/prettyprint.js"></script>
 </head>
 <body>
@@ -91,10 +91,14 @@
     <div id="game-timer" class="timer-normal">29 seconds remaining.</div>
     <div id="history"></div>
     <div id="action-options">
-        <div id="fold-button" class="action-button">Fold</div>
-        <div id="call-button" class="action-button">Call $80</div>
-        <div id="raise-button" class="action-button">Raise $120</div>
+        <button id="fold-button" class="action-button">Fold</button>
+        <button id="call-button" class="action-button">Call</button>
+        <button id="raise-button" class="action-button">Raise</button>
+        <input type="range" min="1" max="100" value="50" class="slider" id="raise-range">
+        <div id="sliderValue"></div>
     </div>
     <button id="start_game" class="seat6-button" onclick="start_game()">Start_game</button>
+
+    <script type="text/javascript" src="static/js/poker.js"></script>
 </body>
 </html>
