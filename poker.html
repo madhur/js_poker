@@ -1,12 +1,14 @@
 <html>
+
 <head>
     <title>Wesley's Poker Game</title>
     <link rel="stylesheet" href="static/css/poker.css" type="text/css">
     <script type="text/javascript" src="static/js/jquery.min.js"></script>
     <script type="text/javascript" src="static/js/jquery.timers.min.js"></script>
-   
+
     <script type="text/javascript" src="static/js/prettyprint.js"></script>
 </head>
+
 <body>
     <div id="poker_table" class="poker-table" data-uid="">
         <div id="seat1" class="seat">
@@ -17,6 +19,8 @@
             <div class="name-chips">
                 <div class="player-name">Player 1</div>
                 <div class="chips">$1000.00</div>
+                <meter id="seat1-handstrength" max=10.0 min=1.0 value=5></meter>
+                <div id="seat1-handrank"></div>
             </div>
             <div class="bet">$80.00</div>
         </div>
@@ -28,6 +32,8 @@
             <div class="name-chips">
                 <div class="player-name">Player 2</div>
                 <div class="chips">$1000.00</div>
+                <meter id="seat2-handstrength" max=10.0 min=1.0 value=5></meter>
+                <div id="seat2-handrank" class="handrank">dsfdsf</div>
             </div>
             <div class="bet">$80.00</div>
         </div>
@@ -39,6 +45,8 @@
             <div class="name-chips">
                 <div class="player-name">Player 3</div>
                 <div class="chips">$1000.00</div>
+                <meter id="seat3-handstrength" max=10.0 min=1.0 value=5></meter>
+                <div id="seat3-handrank" class="handrank">sdfd</div>
             </div>
             <div class="bet">$80.00</div>
         </div>
@@ -50,6 +58,8 @@
             <div class="name-chips">
                 <div class="player-name">Player 4</div>
                 <div class="chips">$1000.00</div>
+                <meter id="seat4-handstrength" max=10.0 min=1.0 value=5></meter>
+                <div id="seat4-handrank" class="handrank"></div>
             </div>
             <div class="bet">$80.00</div>
         </div>
@@ -61,6 +71,8 @@
             <div class="name-chips">
                 <div class="player-name">Player 5</div>
                 <div class="chips">$1000.00</div>
+                <meter id="seat5-handstrength" max=10.0 min=1.0 value=5></meter>
+                <div id="seat5-handrank" class="handrank"></div>
             </div>
             <div class="bet">$80.00</div>
         </div>
@@ -72,6 +84,8 @@
             <div class="name-chips">
                 <div class="player-name">Player 6</div>
                 <div class="chips">$1000.00</div>
+                <meter id="seat6-handstrength" max=10.0 min=1.0 value=5></meter>
+                <div id="seat6-handrank" class="handrank"></div>
             </div>
             <div class="bet">$80.00</div>
         </div>
@@ -92,6 +106,7 @@
     <div id="history"></div>
     <div id="action-options">
         <button id="fold-button" class="action-button">Fold</button>
+        <button id="check-button" class="action-button">Check</button>
         <button id="call-button" class="action-button">Call</button>
         <button id="raise-button" class="action-button">Raise</button>
         <input type="range" min="1" max="100" value="50" class="slider" id="raise-range">
@@ -101,4 +116,5 @@
 
     <script type="text/javascript" src="static/js/poker.js"></script>
 </body>
+
 </html>

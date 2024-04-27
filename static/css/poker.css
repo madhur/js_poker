@@ -1,3 +1,10 @@
+body {
+    background-color: white;
+}
+
+.handrank {
+    color:black
+}
 .poker-table {
     background-image: url('../images/poker_table.png');
     background-repeat: no-repeat;
@@ -240,7 +247,12 @@
 }
 
 #fold-button {
+    left: -80px;
+}
 
+
+#check-button {
+    left: 0px;
 }
 
 #call-button {

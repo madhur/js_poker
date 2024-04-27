@@ -445,14 +445,21 @@ function setFlop(flop) {
   setCard($('#flop1'), flop[0]);
   setCard($('#flop2'), flop[1]);
   setCard($('#flop3'), flop[2]);
+
+  $('#flop1').show();
+  $('#flop2').show();
+  $('#flop3').show();
+
 }
 
 function setTurn(turn) {
   setCard($('#turn'), turn);
+  $('#turn').show();
 }
 
 function setRiver(river) {
   setCard($('#river'), river);
+  $('#river').show();
 }
 
 function setCard(div, card) {
@@ -566,6 +573,15 @@ function setupwebsocket() {
     stopTimer();
   });
 
+  $("#check-button").click(function () {
+
+    const playerAction = getPlayerActionObject();
+    playerAction.action = "check";
+    socket.send(JSON.stringify(playerAction));
+    toggleActionsMenu(false);
+    stopTimer();
+  });
+
   $("#call-button").click(function () {
 
     const playerAction = getPlayerActionObject();
@@ -632,7 +648,9 @@ function setupwebsocket() {
     else if (data.type === 'TURN_UPDATE_BROADCAST') {
       handleTurnUpdateBroadcast(data);
     }
-
+    else if (data.type === 'NEW_ROUND') {
+      handleNewRound(data);
+    }
   });
 
   socket.onclose = () => {
@@ -645,7 +663,18 @@ function setupwebsocket() {
   };
 
   updateGameState();
+}
 
+function handleNewRound(data) {
+  if (data.round === 'FLOP') {
+    setFlop(data.cards);
+  }
+  else if (data.round === 'TURN') {
+    setTurn(data.cards[3]);
+  }
+  else if (data.round === 'RIVER') {
+    setRiver(data.cards[4]);
+  }
 }
 
 function handleHandInitMessage(handInitMessage) {
@@ -675,15 +704,24 @@ function handleHandInitMessage(handInitMessage) {
     }
   });
 
-  $('#board').hide();
+  //$('#board').hide();
+  hideCommunityCards();
   $('#total-pot').text(handInitMessage.pot)
   $('#game-timer').hide();
-  $('#action-options').hide();
+  toggleActionsMenu(false);
 
   // assign globals
   table_id = handInitMessage.tableId;
   hand_id = handInitMessage.handId;
 
+}
+
+function hideCommunityCards() {
+  $('#flop1').hide();
+  $('#flop2').hide();
+  $('#flop3').hide();
+  $('#turn').hide();
+  $('#river').hide();
 }
 
 function distributeHoleCards(data) {
@@ -697,13 +735,10 @@ function handleTurnUpdateBroadcast(data) {
   $('#total-pot').text(data.pot)
   data.users.forEach(user => {
     const playerId = user.playerId;
-
     $('#seat' + playerId + ' .chips').text(user.walletAmount)
-    $('#seat' + playerId + ' .bet').text(user.bet);
+    $('#seat' + playerId + ' .bet').text(user.totalBet);
 
   });
-
-
 }
 
 function handlePlayerTurn(data) {
@@ -711,21 +746,24 @@ function handlePlayerTurn(data) {
     if (action.action === 'fold') {
       $("#fold-button").show();
     }
+    else if (action.action === 'check') {
+      $("#check-button").show();
+    }
     else if (action.action === 'call') {
       $("#call-button").show();
     }
     else if (action.action === 'raise') {
       $("#raise-button").show();
+      $("#raise-range").show();
       $('#raise-range').attr('min', action.minBet);
       $('#raise-range').attr('max', action.maxBet);
-
     }
     else if (action.action === 'all_in') {
 
     }
 
   });
-  $('#action-options').show();
+  //$('#action-options').show();
   startTimer(user_id);
 
 }
@@ -735,7 +773,11 @@ function toggleActionsMenu(show) {
     $('#action-options').show();
   }
   else {
-    $('#action-options').hide();
+    $("#fold-button").hide();
+    $("#check-button").hide();
+    $("#call-button").hide();
+    $("#raise-button").hide();
+    $('#raise-range').hide();
   }
 }
 
