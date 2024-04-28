@@ -229,23 +229,23 @@ function setBet(bet, seat) {
     betdiv.text('$' + bet);
 }
 
-function setPots(curPot, totalPot) {
+// function setPots(curPot, totalPot) {
 
 
-  setCurrentPot(curPot);
-  setTotalPot(totalPot);
-}
+//   setCurrentPot(curPot);
+//   setTotalPot(totalPot);
+// }
 
-function setTotalPot(amount) {
-  $('#total-pot').text('Total pot: $' + amount.toFixed(2));
-}
+// function setTotalPot(amount) {
+//   $('#total-pot').text('Total pot: $' + amount.toFixed(2));
+// }
 
-function setCurrentPot(amount) {
-  if (amount == 0)
-    $('#current-pot').text("");
-  else
-    $('#current-pot').text('$' + amount.toFixed(2));
-}
+// function setCurrentPot(amount) {
+//   if (amount == 0)
+//     $('#current-pot').text("");
+//   else
+//     $('#current-pot').text('$' + amount.toFixed(2));
+// }
 
 
 function moveButton(seat) {
@@ -304,7 +304,7 @@ function setupwebsocket() {
 
     const playerAction = getPlayerActionObject();
     playerAction.action = "fold";
-    socket.send(JSON.stringify(playerAction));
+    sendMessage(playerAction);
     toggleActionsMenu(false);
     stopTimer();
   });
@@ -313,16 +313,21 @@ function setupwebsocket() {
 
     const playerAction = getPlayerActionObject();
     playerAction.action = "check";
-    socket.send(JSON.stringify(playerAction));
+    sendMessage(playerAction);
     toggleActionsMenu(false);
     stopTimer();
   });
+
+  function sendMessage(obj) {
+    socket.send(JSON.stringify(obj));
+    console.log("Message sent", obj);
+  }
 
   $("#call-button").click(function () {
 
     const playerAction = getPlayerActionObject();
     playerAction.action = "call";
-    socket.send(JSON.stringify(playerAction));
+    sendMessage(playerAction);
     toggleActionsMenu(false);
     stopTimer();
   });
@@ -333,7 +338,16 @@ function setupwebsocket() {
     playerAction.action = "raise";
     const raiseValue = $('#raise-range').val();
     playerAction.bet = raiseValue;
-    socket.send(JSON.stringify(playerAction));
+    sendMessage(playerAction);
+    toggleActionsMenu(false);
+    stopTimer();
+  });
+
+  $("#allin-button").click(function () {
+
+    const playerAction = getPlayerActionObject();
+    playerAction.action = "ALL_IN";
+    sendMessage(playerAction);
     toggleActionsMenu(false);
     stopTimer();
   });
@@ -453,7 +467,8 @@ function handleHandInitMessage(handInitMessage) {
 
   //$('#board').hide();
   hideCommunityCards();
-  $('#total-pot').text(handInitMessage.pot)
+  setPots(handInitMessage);
+
   $('#game-timer').hide();
   toggleActionsMenu(false);
   hideStrengths();
@@ -499,8 +514,12 @@ function setStrength(user_id, handStrength) {
   $('#seat' + user_id + ' #handrank').show();
 }
 
+
+
 function handleTurnUpdateBroadcast(data) {
-  $('#total-pot').text(data.pot)
+
+  setPots(data);
+
   data.users.forEach(user => {
     const playerId = user.playerId;
     $('#seat' + playerId + ' .chips').text(user.walletAmount)
@@ -513,6 +532,15 @@ function handleTurnUpdateBroadcast(data) {
     else {
       $('#seat' + playerId + ' .status').text("");
     }
+  });
+}
+
+function setPots(data) {
+  let i = 1;
+  $('.pot').text("");
+  data.pots.forEach(pot => {
+    $('#total-pot' + i).text(pot.pot);
+    i++;
   });
 }
 
