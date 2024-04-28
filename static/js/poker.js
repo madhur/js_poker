@@ -1,248 +1,3 @@
-var game;
-var server;
-var targetSeat = 0;
-
-testhand = {
-  "PokerHand": {
-    "Blinds": [
-      {
-        "Player": "TAP_OR_SNAP",
-        "Type": "SmallBlind",
-        "Amount": "5"
-      },
-      {
-        "Player": "OsoWhisper",
-        "Type": "BigBlind",
-        "Amount": "10"
-      }
-    ],
-    "HoleCards": [
-      {
-        "Rank": "King",
-        "Suit": "Hearts"
-      },
-      {
-        "Rank": "Jack",
-        "Suit": "Clubs"
-      }
-    ],
-    "Rounds": [
-      {
-        "Actions": [
-          {
-            "Player": "Sevillano720",
-            "Type": "Fold"
-          },
-          {
-            "Player": "LC1492",
-            "Type": "Call",
-            "Amount": "10"
-          },
-          {
-            "Player": "Dodenburg",
-            "Type": "Fold"
-          },
-          {
-            "Player": "TeeJay5",
-            "Type": "Raise",
-            "Amount": "20"
-          },
-          {
-            "Player": "TAP_OR_SNAP",
-            "Type": "Call",
-            "Amount": "15"
-          },
-          {
-            "Player": "OsoWhisper",
-            "Type": "Call",
-            "Amount": "10"
-          },
-          {
-            "Player": "LC1492",
-            "Type": "Call",
-            "Amount": "10"
-          }
-        ]
-      },
-      {
-        "CommunityCards": [
-          {
-            "Rank": "Ten",
-            "Suit": "Diamonds"
-          },
-          {
-            "Rank": "Jack",
-            "Suit": "Diamonds"
-          },
-          {
-            "Rank": "Eight",
-            "Suit": "Clubs"
-          }
-        ],
-        "Actions": [
-          {
-            "Player": "TAP_OR_SNAP",
-            "Type": "Bet",
-            "Amount": "10"
-          },
-          {
-            "Player": "OsoWhisper",
-            "Type": "Raise",
-            "Amount": "20"
-          },
-          {
-            "Player": "LC1492",
-            "Type": "Fold"
-          },
-          {
-            "Player": "TeeJay5",
-            "Type": "Call",
-            "Amount": "20"
-          },
-          {
-            "Player": "TAP_OR_SNAP",
-            "Type": "Raise",
-            "Amount": "20"
-          },
-          {
-            "Player": "OsoWhisper",
-            "Type": "Raise",
-            "Amount": "20"
-          },
-          {
-            "Player": "TeeJay5",
-            "Type": "Fold"
-          },
-          {
-            "Player": "TAP_OR_SNAP",
-            "Type": "Call",
-            "Amount": "10"
-          }
-        ]
-      },
-      {
-        "CommunityCards": {
-          "Rank": "Five",
-          "Suit": "Spades"
-        },
-        "Actions": [
-          {
-            "Player": "TAP_OR_SNAP",
-            "Type": "Check"
-          },
-          {
-            "Player": "OsoWhisper",
-            "Type": "Bet",
-            "Amount": "20"
-          },
-          {
-            "Player": "TAP_OR_SNAP",
-            "Type": "Call",
-            "Amount": "20"
-          }
-        ]
-      },
-      {
-        "CommunityCards": {
-          "Rank": "Nine",
-          "Suit": "Clubs"
-        },
-        "Actions": [
-          {
-            "Player": "TAP_OR_SNAP",
-            "Type": "Check"
-          },
-          {
-            "Player": "OsoWhisper",
-            "Type": "Bet",
-            "Amount": "20"
-          },
-          {
-            "Player": "TAP_OR_SNAP",
-            "Type": "Call",
-            "Amount": "20"
-          }
-        ]
-      }
-    ],
-    "Context": {
-      "Site": "PartyPoker",
-      "Currency": "USD",
-      "ID": "2229799540",
-      "Table": "Table  12551 ",
-      "TimeStamp": "2005-06-19T04:15:10",
-      "Format": "CashGame",
-      "Button": "1",
-      "BigBlind": "10",
-      "SmallBlind": "5",
-      "BettingType": "FixedLimit",
-      "PokerVariant": "TexasHoldEm"
-    },
-    "Results": [
-      {
-        "Player": "OsoWhisper",
-        "HoleCards": [
-          {
-            "Rank": "Nine",
-            "Suit": "Spades"
-          },
-          {
-            "Rank": "Queen",
-            "Suit": "Spades"
-          }
-        ],
-        "WonPots": { "Amount": "258" }
-      },
-      {
-        "Player": "TAP_OR_SNAP",
-        "HoleCards": [
-          {
-            "Rank": "Nine",
-            "Suit": "Diamonds"
-          },
-          {
-            "Rank": "Ten",
-            "Suit": "Hearts"
-          }
-        ]
-      }
-    ],
-    "Players": [
-      {
-        "Name": "TeeJay5",
-        "Stack": "526",
-        "Seat": "1"
-      },
-      {
-        "Name": "TAP_OR_SNAP",
-        "Stack": "301",
-        "Seat": "2"
-      },
-      {
-        "Name": "OsoWhisper",
-        "Stack": "177.77",
-        "Seat": "3"
-      },
-      {
-        "Name": "Sevillano720",
-        "Stack": "742",
-        "Seat": "4"
-      },
-      {
-        "Name": "Dodenburg",
-        "Stack": "458.5",
-        "Seat": "6"
-      },
-      {
-        "Name": "LC1492",
-        "Stack": "641",
-        "Seat": "5"
-      }
-    ],
-    "Rake": "2.00",
-    "Hero": "TeeJay5"
-  }
-};
 
 function catchUp() {
   // var round = testhand['PokerHand']['Rounds'].length - 1;
@@ -492,25 +247,6 @@ function setCurrentPot(amount) {
     $('#current-pot').text('$' + amount.toFixed(2));
 }
 
-function getChipSrc(chipValue) {
-
-}
-
-function foldClicked() {
-
-}
-
-function callClicked() {
-
-}
-
-function raiseClicked() {
-
-}
-
-function resetTable() {
-
-}
 
 function moveButton(seat) {
   var button = $('#button');
@@ -651,6 +387,9 @@ function setupwebsocket() {
     else if (data.type === 'NEW_ROUND') {
       handleNewRound(data);
     }
+    else if (data.type === 'HAND_STRENGTH') {
+      handleStrengths(data);
+    }
   });
 
   socket.onclose = () => {
@@ -665,6 +404,10 @@ function setupwebsocket() {
   updateGameState();
 }
 
+function handleStrengths(data) {
+  setStrength(user_id, data.handStrength);
+}
+
 function handleNewRound(data) {
   if (data.round === 'FLOP') {
     setFlop(data.cards);
@@ -675,6 +418,10 @@ function handleNewRound(data) {
   else if (data.round === 'RIVER') {
     setRiver(data.cards[4]);
   }
+
+  // We call the same method, since the metadata is same
+  handleTurnUpdateBroadcast(data);
+
 }
 
 function handleHandInitMessage(handInitMessage) {
@@ -709,11 +456,23 @@ function handleHandInitMessage(handInitMessage) {
   $('#total-pot').text(handInitMessage.pot)
   $('#game-timer').hide();
   toggleActionsMenu(false);
+  hideStrengths();
+  hideStatus();
 
   // assign globals
   table_id = handInitMessage.tableId;
   hand_id = handInitMessage.handId;
 
+}
+
+function hideStatus() {
+  $('.status').hide();
+}
+
+function hideStrengths() {
+
+  $(".handstrength").hide();
+  $(".handrank").hide();
 }
 
 function hideCommunityCards() {
@@ -726,9 +485,18 @@ function hideCommunityCards() {
 
 function distributeHoleCards(data) {
   setHoleCards(user_id, data.cards)
+  setStrength(user_id, data.handStrength);
   data.activePlayers.forEach(user => {
     $('#seat' + user + ' .holecards').show();
-  })
+  });
+}
+
+function setStrength(user_id, handStrength) {
+  $('#seat' + user_id + ' #handstrength').attr('value', handStrength.handValue);
+  $('#seat' + user_id + ' #handrank').text(handStrength.handStrength);
+
+  $('#seat' + user_id + ' #handstrength').show();
+  $('#seat' + user_id + ' #handrank').show();
 }
 
 function handleTurnUpdateBroadcast(data) {
@@ -738,6 +506,13 @@ function handleTurnUpdateBroadcast(data) {
     $('#seat' + playerId + ' .chips').text(user.walletAmount)
     $('#seat' + playerId + ' .bet').text(user.totalBet);
 
+    if (user.status) {
+      $('#seat' + playerId + ' .status').text(user.status);
+      $('#seat' + playerId + ' .status').show();
+    }
+    else {
+      $('#seat' + playerId + ' .status').text("");
+    }
   });
 }
 
@@ -751,6 +526,7 @@ function handlePlayerTurn(data) {
     }
     else if (action.action === 'call') {
       $("#call-button").show();
+      $('#call-button').text('Call ' + action.bet);
     }
     else if (action.action === 'raise') {
       $("#raise-button").show();
@@ -759,11 +535,11 @@ function handlePlayerTurn(data) {
       $('#raise-range').attr('max', action.maxBet);
     }
     else if (action.action === 'all_in') {
-
+      $("#allin-button").show();
+      $('#allin-button').text('AllIn ' + action.bet);
     }
 
   });
-  //$('#action-options').show();
   startTimer(user_id);
 
 }
@@ -778,6 +554,7 @@ function toggleActionsMenu(show) {
     $("#call-button").hide();
     $("#raise-button").hide();
     $('#raise-range').hide();
+    $("#allin-button").hide();
   }
 }
 

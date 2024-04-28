@@ -29,7 +29,7 @@ body {
 
 .name-chips {
     width:140px;
-    height:33px;
+    height:70px;
     background-color:gray;
     font-size: 14px;
     color:white;
@@ -261,6 +261,9 @@ body {
 
 #raise-button {
     left:200px;
+}
+#allin-button {
+    left:-160px;
 }
 
 #raise-range {
