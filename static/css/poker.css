@@ -185,22 +185,22 @@ body {
     top:0;
 }
 
-#flop1 {
+#card1 {
 }
 
-#flop2 {
+#card2 {
     left:52px;
 }
 
-#flop3 {
+#card3 {
     left:104px;
 }
 
-#turn {
+#card4 {
     left:156px;
 }
 
-#river {
+#card5 {
     left:208px;
 }
 
