@@ -493,7 +493,7 @@ function updateChips(data) {
     const playerId = user.playerId;
     $('#seat' + playerId + ' .chips').text(user.walletAmount)
     if (user.bet) {
-      $('#seat' + playerId + ' .bet').text(user.bet)
+      $('#seat' + playerId + ' .bet').text(user.totalBet)
     }
     else {
       $('#seat' + playerId + ' .bet').text("")
