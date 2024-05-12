@@ -229,6 +229,7 @@ var socket = null;
 var user_id = null;
 var table_id = null;
 var hand_id = null;
+var action_id = null;
 
 // Global vars end
 
@@ -334,6 +335,7 @@ function setupwebsocket() {
       "type": "PLAYER_ACTION",
       "tableId": table_id,
       "handId": hand_id,
+      "actionId": action_id,
       "sid": "test",
       "src": user_id,
       "action": null,
@@ -577,6 +579,14 @@ function handleTurnUpdateBroadcast(data) {
   updateChips(data);
   updateStatus(data);
 
+  // Hide the action menu if the user is recieving , turn update broadcast for himself.
+  data.users.forEach(user => {
+    if (user.playerId === user_id) {
+      toggleActionsMenu(false);
+    }
+  });
+  
+
 }
 
 function setPots(data) {
@@ -589,6 +599,10 @@ function setPots(data) {
 }
 
 function handlePlayerTurn(data) {
+  // Store the action id, so that we can send it again
+  action_id = data.actionId;
+
+
   data.actionMenu.forEach(action => {
     if (action.action === 'fold') {
       $("#fold-button").show();
